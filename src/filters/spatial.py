@@ -1,6 +1,6 @@
 import numpy as np
 
-def mi_active_electrodes(data):
+def mi_active_electrodes(eeg, chan):
     """
     This function filters electrode close to motor cortex location involved in MI activity according to [1] :
     F3,Fz,F4,FC1,FC2,C3,Cz,C4,CP1,CP2,P3,P4
@@ -13,11 +13,11 @@ def mi_active_electrodes(data):
     """
     list_electrodes = ['F3', 'Fz', 'F4', 'FC1', 'FC2', 'C3', 'Cz', 'C4', 'CP1', 'CP2', 'P3', 'P4']
     list_electrodes = np.array(list_electrodes)
-    indices_to_keep = np.where((data.chan == list_electrodes.reshape(-1, 1)))[1]
+    indices_to_keep = np.where((chan == list_electrodes.reshape(-1, 1)))[1]
     indices = np.zeros(62, dtype=np.bool)
     indices[indices_to_keep] = True
 
-    data.eeg = data.eeg[:, :, indices]
-    data.chan = list_electrodes
+    eeg = eeg[:, :, indices]
+    chan = list_electrodes
 
-    return data
+    return eeg, chan

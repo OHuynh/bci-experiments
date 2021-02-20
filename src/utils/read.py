@@ -1,8 +1,8 @@
 from scipy import io
 import numpy as np
 
+from core.data import *
 from collections import namedtuple
-
 
 def load_mi_classification():
     """
@@ -15,8 +15,7 @@ def load_mi_classification():
     #10 trials*3
     :return: array of data tuples
     """
-    Data = namedtuple('Data',
-                      ['eeg', 'nb_trials', 'frequency', 'y_dec', 'one_hot', 'y_txt', 'map_label', 'chan'])
+
     data = []
     key_dict = 'Training'
     for subject in range(1, 21):
