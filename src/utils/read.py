@@ -4,7 +4,8 @@ import numpy as np
 from core.data import *
 from collections import namedtuple
 
-def load_mi_classification():
+
+def load_mi_classification(load_train=True):
     """
     Load the Track#1 of OSF competition.
     link to dl : https://osf.io/s6t9e/
@@ -13,14 +14,21 @@ def load_mi_classification():
     #20 subjects
     #4 secondes : [0 - 3] : black cross [3 - 4] : right/left hand task
     #10 trials*3
+    :param load_train: boolean, if true load the training data, otherwise load the test
     :return: array of data tuples
     """
 
     data = []
-    key_dict = 'Training'
+    if load_train:
+        key_dict = 'Training'
+        subpath = 'Training Set'
+    else:
+        key_dict = 'Test'
+        subpath = 'Test Set'
+
     for subject in range(1, 21):
-        path = '../data/OSF_Competition/Track#1 Few-shot EEG learning/Training set/Data_Sample{:02d}.mat'\
-            .format(subject)
+        path = '../data/OSF_Competition/Track#1 Few-shot EEG learning/{}/Data_Sample{:02d}.mat'\
+            .format(subpath, subject)
         raw_data = io.loadmat(path)[key_dict][0][0]
 
         eeg = raw_data[0]  # [t,trial,n]
