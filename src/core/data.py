@@ -19,9 +19,13 @@ class Data:
         self._eeg, self._chan = filter_fn(self._eeg, self._chan)
 
     def compute_features(self):
-        for trial in self._nb_trials:
+        for trial in range(self._nb_trials):
             self._features.append(np.cov(self._eeg[:, trial, :].T.reshape(len(self._chan), -1)).flatten())
 
     @property
     def features(self):
-        return self._features
+        return np.array(self._features)
+
+    @property
+    def y_dec(self):
+        return self._y_dec
