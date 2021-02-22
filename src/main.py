@@ -15,7 +15,7 @@ def main():
         data.spatial_filter(mi_active_electrodes)
         data.freq_filter(mi_band_pass_filter)
 
-
+        data.compute_features()
 
 if __name__ == "__main__":
     main()
