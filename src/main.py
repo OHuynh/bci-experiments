@@ -7,6 +7,7 @@ import scipy.linalg
 ##### project import #####
 from filters.spatial import *
 from filters.frequency import *
+from core.data import *
 from utils.read import *
 
 def estimator_SVM_kernel_RBF():
@@ -35,7 +36,7 @@ def estimator_SVM_kernel_RBF():
     clf = SVC(C=0.1, kernel=log_euclidean_gaussian_rbf)
     return clf
 
-def per_subject_classif(all_data_train, all_data_test):
+def within_subject_classif(all_data_train, all_data_test):
     cv = KFold(n_splits=10, shuffle=True)
     for subject in range(len(all_data_train)):
         features = np.concatenate([all_data_train[subject].features, all_data_test[subject].features]
@@ -54,12 +55,12 @@ def process_data(all_data):
 
 
 def main():
-    all_data_train = load_mi_classification('Training Set')
-    all_data_test = load_mi_classification('Test Set')
+    all_data_train = load_mi_classification(CovData, 'Training Set')
+    all_data_test = load_mi_classification(CovData, 'Test Set')
     all_data_train = process_data(all_data_train)
     all_data_test = process_data(all_data_test)
 
-    per_subject_classif(all_data_train, all_data_test)
+    within_subject_classif(all_data_train, all_data_test)
 
 if __name__ == "__main__":
     main()

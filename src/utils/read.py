@@ -5,7 +5,7 @@ from core.data import *
 from collections import namedtuple
 
 
-def load_mi_classification(load_train=True):
+def load_mi_classification(type_data, load_train=True):
     """
     Load the Track#1 of OSF competition.
     link to dl : https://osf.io/s6t9e/
@@ -14,6 +14,7 @@ def load_mi_classification(load_train=True):
     #20 subjects
     #4 secondes : [0 - 3] : black cross [3 - 4] : right/left hand task
     #10 trials*3
+    :param type_data: Data class used for instantiation
     :param load_train: boolean, if true load the training data, otherwise load the test
     :return: array of data tuples
     """
@@ -41,14 +42,14 @@ def load_mi_classification(load_train=True):
         map_label = raw_data[5]
         chan = raw_data[6]
         y_dec = y_dec.astype(np.int)
-        data.append(Data(eeg=eeg,
-                         nb_trials=nb_trials,
-                         frequency=frequency,
-                         y_dec=y_dec,
-                         one_hot=one_hot,
-                         y_txt=y_txt,
-                         map_label=map_label,
-                         chan=chan))
+        data.append(type_data(eeg=eeg,
+                              nb_trials=nb_trials,
+                              frequency=frequency,
+                              y_dec=y_dec,
+                              one_hot=one_hot,
+                              y_txt=y_txt,
+                              map_label=map_label,
+                              chan=chan))
     return data
 
 

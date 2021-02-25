@@ -1,4 +1,5 @@
 import numpy as np
+import abc
 
 class Data:
     def __init__(self, eeg, nb_trials, frequency, y_dec, one_hot, y_txt, map_label, chan):
@@ -18,9 +19,9 @@ class Data:
     def spatial_filter(self, filter_fn):
         self._eeg, self._chan = filter_fn(self._eeg, self._chan)
 
+    @abc.abstractmethod
     def compute_features(self):
-        for trial in range(self._nb_trials):
-            self._features.append(np.cov(self._eeg[:, trial, :].T.reshape(len(self._chan), -1)).flatten())
+        pass
 
     @property
     def features(self):
@@ -29,3 +30,9 @@ class Data:
     @property
     def y_dec(self):
         return self._y_dec
+
+
+class CovData(Data):
+    def compute_features(self):
+        for trial in range(self._nb_trials):
+            self._features.append(np.cov(self._eeg[:, trial, :].T.reshape(len(self._chan), -1)).flatten())
