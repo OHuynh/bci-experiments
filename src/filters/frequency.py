@@ -3,10 +3,10 @@
 from mne.filter import filter_data
 
 
-def mi_band_pass_filter(eeg):
+def mi_band_pass_filter(eeg, frequency):
     # band-pass filter
     eeg = filter_data(eeg.T,
-                      sfreq=1000.0,
+                      sfreq=frequency,
                       l_freq=7.0,
                       h_freq=35.0, picks=None, filter_length='auto',
                       l_trans_bandwidth='auto', h_trans_bandwidth='auto', n_jobs=1,

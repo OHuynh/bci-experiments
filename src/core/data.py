@@ -1,5 +1,9 @@
+##### generic library #####
 import numpy as np
 import abc
+
+##### features computation #####
+import scipy
 
 class Data:
     def __init__(self, eeg, nb_trials, frequency, y_dec, one_hot, y_txt, map_label, chan):
@@ -14,7 +18,7 @@ class Data:
         self._features = []
 
     def freq_filter(self, filter_fn):
-        self._eeg = filter_fn(self._eeg)
+        self._eeg = filter_fn(self._eeg, self._frequency)
 
     def spatial_filter(self, filter_fn):
         self._eeg, self._chan = filter_fn(self._eeg, self._chan)
@@ -36,3 +40,4 @@ class CovData(Data):
     def compute_features(self):
         for trial in range(self._nb_trials):
             self._features.append(np.cov(self._eeg[:, trial, :].T.reshape(len(self._chan), -1)).flatten())
+
