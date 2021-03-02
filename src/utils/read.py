@@ -4,8 +4,12 @@ import numpy as np
 from core.data import *
 from collections import namedtuple
 
+from mne import Epochs, pick_types, events_from_annotations
+from mne.io import concatenate_raws
+from mne.io.edf import read_raw_edf
+from mne.datasets import eegbci
 
-def load_mi_classification(type_data, load_train=True):
+def load_osf_mi_classification(type_data, load_train=True):
     """
     Load the Track#1 of OSF competition.
     link to dl : https://osf.io/s6t9e/
@@ -53,4 +57,48 @@ def load_mi_classification(type_data, load_train=True):
     return data
 
 
+def load_eegbci_mi_classification(type_data):
+    """
+    EEGBCI dataset [1]
+    [1] Schalk, G., McFarland, D.J., Hinterberger, T., Birbaumer, N.,
+        Wolpaw, J.R. (2004) BCI2000: A General-Purpose Brain-Computer
+        Interface (BCI)
+    :return: array of data tuples
+    """
 
+    data = []
+    for subject in range(1, 21):
+        tmin, tmax = -0.5, 1.
+        event_id = dict(hand_left=2, hand_right=3)
+        runs = [4, 8, 12]   # Motor imagery: left vs right hand
+
+        raw_files = [
+            read_raw_edf(f, preload=True) for f in eegbci.load_data(subject, runs, path='../data')
+        ]
+        raw = concatenate_raws(raw_files)
+
+        picks = pick_types(
+            raw.info, meg=False, eeg=True, stim=False, eog=False, exclude='bads')
+        events, _ = events_from_annotations(raw, event_id=dict(T1=2, T2=3))
+
+        epochs = Epochs(
+            raw,
+            events,
+            event_id,
+            tmin,
+            tmax,
+            proj=True,
+            picks=picks,
+            baseline=None,
+            preload=True,
+            verbose=False)
+        labels = epochs.events[:, -1] - 2
+        data.append(type_data(eeg=np.transpose(epochs.get_data(), [2, 0, 1]),
+                              nb_trials=45,
+                              frequency=raw.info['sfreq'],
+                              y_dec=labels,
+                              one_hot=None,
+                              y_txt=None,
+                              map_label=None,
+                              chan=np.array([str.upper(chan.replace('.', '')) for chan in epochs.ch_names])))
+    return data

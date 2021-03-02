@@ -50,15 +50,20 @@ def process_data(all_data):
     for data in all_data:
         data.spatial_filter(mi_active_electrodes)
         data.freq_filter(mi_band_pass_filter)
+        #data.window_crop(3000, 4000)
+
         data.compute_features()
     return all_data
 
 
 def main():
-    all_data_train = load_mi_classification(CovData, 'Training Set')
-    all_data_test = load_mi_classification(CovData, 'Test Set')
+    #all_data_train = load_osf_mi_classification(TimeFrequencyData, 'Training Set')
+    #all_data_test = load_osf_mi_classification(TimeFrequencyData, 'Test Set')
+
+    all_data_train = load_eegbci_mi_classification(TimeFrequencyData)
+
     all_data_train = process_data(all_data_train)
-    all_data_test = process_data(all_data_test)
+    #all_data_test = process_data(all_data_test)
 
     within_subject_classif(all_data_train, all_data_test)
 
