@@ -50,6 +50,8 @@ def process_data(all_data):
     for data in all_data:
         data.spatial_filter(mi_active_electrodes)
         data.freq_filter(mi_band_pass_filter)
+        data.plot_eeg(label=0)
+
         #data.window_crop(3000, 4000)
 
         data.compute_features()

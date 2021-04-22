@@ -39,6 +39,16 @@ class Data:
     def y_dec(self):
         return self._y_dec
 
+    def plot_eeg(self, label, trial_to_show=3):
+        eeg_to_plot = self._eeg[:, self._y_dec == label, :]
+        eeg_to_plot = eeg_to_plot[:, :trial_to_show, :]
+        t = np.arange(0, eeg_to_plot.shape[0])
+        for i in range(eeg_to_plot.shape[1]):
+            for j in range(eeg_to_plot.shape[2]):
+                ax = plt.subplot(eeg_to_plot.shape[1], eeg_to_plot.shape[2], i * eeg_to_plot.shape[2] + j + 1)
+                plt.plot(t, eeg_to_plot[:, i, j])
+                plt.xlim(0, eeg_to_plot.shape[0])
+        plt.show()
 
 class CovData(Data):
     def compute_features(self):
