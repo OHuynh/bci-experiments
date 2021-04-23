@@ -53,8 +53,8 @@ class Data:
             plt.show()
         elif mode == 'psd':
             samples = eeg_to_plot.shape[0]
-            time_window = 0.25
-            overlap_window = 0.2
+            time_window = 1
+            overlap_window = 0.75
             for i in range(eeg_to_plot.shape[1]):
                 for j in range(eeg_to_plot.shape[2]):
                     f, Pxx_den = signal.welch(eeg_to_plot[:, i, j],
