@@ -2,6 +2,7 @@
 import numpy as np
 import abc
 import matplotlib.pyplot as plt
+from scipy import signal
 
 ##### features computation #####
 import pywt
@@ -39,16 +40,32 @@ class Data:
     def y_dec(self):
         return self._y_dec
 
-    def plot_eeg(self, label, trial_to_show=3):
+    def plot_eeg(self, label, mode='raw', trial_to_show=3):
         eeg_to_plot = self._eeg[:, self._y_dec == label, :]
         eeg_to_plot = eeg_to_plot[:, :trial_to_show, :]
         t = np.arange(0, eeg_to_plot.shape[0])
-        for i in range(eeg_to_plot.shape[1]):
-            for j in range(eeg_to_plot.shape[2]):
-                ax = plt.subplot(eeg_to_plot.shape[1], eeg_to_plot.shape[2], i * eeg_to_plot.shape[2] + j + 1)
-                plt.plot(t, eeg_to_plot[:, i, j])
-                plt.xlim(0, eeg_to_plot.shape[0])
-        plt.show()
+        if mode == 'raw':
+            for i in range(eeg_to_plot.shape[1]):
+                for j in range(eeg_to_plot.shape[2]):
+                    ax = plt.subplot(eeg_to_plot.shape[1], eeg_to_plot.shape[2], i * eeg_to_plot.shape[2] + j + 1)
+                    plt.plot(t, eeg_to_plot[:, i, j])
+                    plt.xlim(0, eeg_to_plot.shape[0])
+            plt.show()
+        elif mode == 'psd':
+            samples = eeg_to_plot.shape[0]
+            time_window = 0.25
+            overlap_window = 0.2
+            for i in range(eeg_to_plot.shape[1]):
+                for j in range(eeg_to_plot.shape[2]):
+                    f, Pxx_den = signal.welch(eeg_to_plot[:, i, j],
+                                              self._frequency,
+                                              nperseg=int(time_window * self._frequency**2 / samples),
+                                              noverlap=int(overlap_window * self._frequency**2 / samples))
+                    plt.semilogy(f, Pxx_den)
+                    plt.xlabel('frequency [Hz]')
+                    plt.ylabel('PSD [V**2/Hz]')
+                    plt.show()
+
 
 class CovData(Data):
     def compute_features(self):
