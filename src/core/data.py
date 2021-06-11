@@ -28,6 +28,9 @@ class Data:
     def window_crop(self, stamp_start, stamp_stop):
         self._eeg = self._eeg[stamp_start:stamp_stop, :, :]
 
+    def decomposition(self, decomposition_fn):
+        self._eeg = decomposition_fn(self._eeg)
+
     @abc.abstractmethod
     def compute_features(self):
         pass
@@ -40,7 +43,7 @@ class Data:
     def y_dec(self):
         return self._y_dec
 
-    def plot_eeg(self, label, mode='raw', trial_to_show=3):
+    def plot_eeg(self, label, mode='raw', trial_to_show=5):
         eeg_to_plot = self._eeg[:, self._y_dec == label, :]
         eeg_to_plot = eeg_to_plot[:, :trial_to_show, :]
         t = np.arange(0, eeg_to_plot.shape[0])
