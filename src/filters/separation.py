@@ -6,7 +6,11 @@ from sklearn.decomposition import FastICA
 from pyDecGMCA.algoDecG import *
 from pyDecGMCA.mathTools import *
 
-def fastICA(eeg, n_components=4):
+from smica.core_smica import SMICA
+
+
+def fastICA(data, n_components=4):
+    eeg = data.eeg
     transformer = FastICA(n_components=n_components, random_state=0, max_iter=1000)
     sources = np.zeros(shape=(eeg.shape[0], eeg.shape[1], n_components))
     for trial in range(eeg.shape[1]):
@@ -14,15 +18,16 @@ def fastICA(eeg, n_components=4):
     return sources
 
 
-def decGMCA(eeg, n_components=5):
+def decGMCA(data, n_components=5):
     """
     joint deconvolution and blind source separation from [1]
 
     [1] : Joint Multichannel Deconvolution and Blind Source Separation. Ming Jiang, Jerome Bobin, Jean-Luc Starck.
           SIAM Journal on Imaging Sciences, Society for Industrial and Applied Mathematics, 2017
-    :param eeg:
+    :param data:
     :return:
     """
+    eeg = data.eeg
     Nx = 1
     Ny = eeg.shape[0]
     Imax = 100
@@ -42,3 +47,24 @@ def decGMCA(eeg, n_components=5):
         sources[:, trial, :] = S_est.transpose()
         #print(S_est)
     return sources
+
+def smica(data, freqs,  n_components=20, **kwargs):
+    """
+    Spectral Matching Independent Component Analysis [1]
+
+    :param data:
+    :param n_components: 
+    :return: 
+    """
+    X = data.eeg.transpose([2, 1, 0])
+    X = X.reshape([X.shape[0], -1])
+    normalization = np.std(X)
+    X /= normalization
+
+    scaling = np.std(X, axis=1)
+    X /= scaling[:, None]
+
+    smica = SMICA(n_components, freqs, data.sampling_frequency, avg_noise=False, corr=False)
+    smica.fit(X, **kwargs)
+    sources = smica.compute_sources().reshape(n_components, data._nb_trials, -1)
+    return sources.transpose([2, 1, 0])

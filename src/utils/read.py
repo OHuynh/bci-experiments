@@ -68,7 +68,7 @@ def load_eegbci_mi_classification(type_data):
 
     data = []
     for subject in range(1, 21):
-        tmin, tmax = -0.5, 1.
+        tmin, tmax = -1., 4.
         event_id = dict(hand_left=2, hand_right=3)
         runs = [4, 8, 12]   # Motor imagery: left vs right hand
 

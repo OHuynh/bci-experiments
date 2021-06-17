@@ -2,12 +2,12 @@
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score, KFold
 import scipy.linalg
-
+from functools import partial
 
 ##### project import #####
 from filters.spatial import *
 from filters.frequency import *
-from filters.decomposition import *
+from filters.separation import *
 from core.data import *
 from utils.read import *
 
@@ -49,9 +49,13 @@ def within_subject_classif(all_data_train, all_data_test):
 
 def process_data(all_data):
     for data in all_data:
-        data.spatial_filter(mi_active_electrodes)
+        #data.spatial_filter(mi_active_electrodes)
         data.freq_filter(mi_band_pass_filter)
-        data.decomposition(decGMCA)
+
+        smica_fn = partial(smica,
+                           freqs=np.linspace(7, 30, 31))
+
+        data.decomposition(smica_fn)
         data.plot_eeg(label=1, mode='raw')
 
         #data.window_crop(3000, 4000)
@@ -61,10 +65,10 @@ def process_data(all_data):
 
 
 def main():
-    all_data_train = load_osf_mi_classification(TimeFrequencyData, 'Training Set')
-    all_data_test = load_osf_mi_classification(TimeFrequencyData, 'Test Set')
+    #all_data_train = load_osf_mi_classification(TimeFrequencyData, 'Training Set')
+    #all_data_test = load_osf_mi_classification(TimeFrequencyData, 'Test Set')
 
-    #all_data_train = load_eegbci_mi_classification(TimeFrequencyData)
+    all_data_train = load_eegbci_mi_classification(TimeFrequencyData)
 
     all_data_train = process_data(all_data_train)
     #all_data_test = process_data(all_data_test)+

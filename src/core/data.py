@@ -29,7 +29,7 @@ class Data:
         self._eeg = self._eeg[stamp_start:stamp_stop, :, :]
 
     def decomposition(self, decomposition_fn):
-        self._eeg = decomposition_fn(self._eeg)
+        self._eeg = decomposition_fn(self)
 
     @abc.abstractmethod
     def compute_features(self):
@@ -42,6 +42,14 @@ class Data:
     @property
     def y_dec(self):
         return self._y_dec
+
+    @property
+    def eeg(self):
+        return self._eeg
+
+    @property
+    def sampling_frequency(self):
+        return self._frequency
 
     def plot_eeg(self, label, mode='raw', trial_to_show=5):
         eeg_to_plot = self._eeg[:, self._y_dec == label, :]
