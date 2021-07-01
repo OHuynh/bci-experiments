@@ -81,7 +81,7 @@ class Data:
 class CovData(Data):
     def compute_features(self):
         for trial in range(self._nb_trials):
-            self._features.append(np.cov(self._eeg[:, trial, :].T.reshape(len(self._chan), -1)).flatten())
+            self._features.append(np.cov(self._eeg[:, trial, :].T.reshape(self._eeg.shape[2], -1)).flatten())
 
 
 class TimeFrequencyData(Data):
@@ -94,7 +94,7 @@ class TimeFrequencyData(Data):
             scales = np.arange(1, 128)
             print(self.y_dec[trial])
             sampling_period = 1.0/1000.0
-            cwtmatr, freqs = pywt.cwt(self._eeg[:, trial, 5], scales, 'cmor3-3', sampling_period=sampling_period)
+            cwtmatr, freqs = pywt.cwt(self._eeg[:, trial, 0], scales, 'cmor3-3', sampling_period=sampling_period)
             power = (abs(cwtmatr)) ** 2
 
             plt.subplot(2, 1, 1)
@@ -107,7 +107,7 @@ class TimeFrequencyData(Data):
 
             plt.title('C3 ' + plot_title)
             plt.subplot(2, 1, 2)
-            cwtmatr, freqs = pywt.cwt(self._eeg[:, trial, 7], scales, 'cmor3-3', sampling_period=sampling_period)
+            cwtmatr, freqs = pywt.cwt(self._eeg[:, trial, 1], scales, 'cmor3-3', sampling_period=sampling_period)
             power = (abs(cwtmatr)) ** 2
             plt.imshow(power[:, :], aspect='auto')
             plt.title('C4 ' + plot_title)

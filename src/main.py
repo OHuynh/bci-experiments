@@ -48,15 +48,17 @@ def within_subject_classif(all_data_train, all_data_test):
         print("RBF SVM Classification accuracy: {} ".format(np.mean(scores)))
 
 def process_data(all_data):
-    for data in all_data:
-        #data.spatial_filter(mi_active_electrodes)
+    for idx, data in enumerate(all_data):
+        data.spatial_filter(mi_active_electrodes)
         data.freq_filter(mi_band_pass_filter)
 
-        smica_fn = partial(smica,
-                           freqs=np.linspace(7, 30, 31))
+        #smica_fn = partial(smica,
+        #                   freqs=np.linspace(7, 30, 31))
 
-        data.decomposition(smica_fn)
+
+        data.decomposition(jisamm)
         data.plot_eeg(label=1, mode='raw')
+        data.plot_eeg(label=0, mode='raw')
 
         #data.window_crop(3000, 4000)
 
@@ -65,13 +67,16 @@ def process_data(all_data):
 
 
 def main():
-    #all_data_train = load_osf_mi_classification(TimeFrequencyData, 'Training Set')
-    #all_data_test = load_osf_mi_classification(TimeFrequencyData, 'Test Set')
+    #all_data_train = load_osf_mi_classification(CovData, 'Training Set')
+    #all_data_test = load_osf_mi_classification(CovData, 'Test Set')
+
 
     all_data_train = load_eegbci_mi_classification(TimeFrequencyData)
+    all_data_train = all_data_train[:2]
+    #all_data_test = all_data_test[:2]
 
     all_data_train = process_data(all_data_train)
-    #all_data_test = process_data(all_data_test)+
+    all_data_test = process_data(all_data_test)
 
     within_subject_classif(all_data_train, all_data_test)
 
