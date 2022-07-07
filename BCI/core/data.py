@@ -7,6 +7,7 @@ from scipy import signal
 ##### features computation #####
 import pywt
 
+
 class Data:
     def __init__(self, eeg, nb_trials, frequency, y_dec, one_hot, y_txt, map_label, chan):
         self._eeg = eeg #[step, trial, electrode]
@@ -51,16 +52,18 @@ class Data:
     def sampling_frequency(self):
         return self._frequency
 
-    def plot_eeg(self, label, mode='raw', trial_to_show=5):
+    def plot_eeg(self, label, mode='raw', trial_to_show=5, channels_to_show=10):
         eeg_to_plot = self._eeg[:, self._y_dec == label, :]
-        eeg_to_plot = eeg_to_plot[:, :trial_to_show, :]
+        eeg_to_plot = eeg_to_plot[:, :trial_to_show, :min(channels_to_show, eeg_to_plot.shape[2])]
         t = np.arange(0, eeg_to_plot.shape[0])
         if mode == 'raw':
-            for i in range(eeg_to_plot.shape[1]):
-                for j in range(eeg_to_plot.shape[2]):
-                    ax = plt.subplot(eeg_to_plot.shape[1], eeg_to_plot.shape[2], i * eeg_to_plot.shape[2] + j + 1)
-                    plt.plot(t, eeg_to_plot[:, i, j])
+            for i in range(eeg_to_plot.shape[2]):
+                for j in range(eeg_to_plot.shape[1]):
+                    ax = plt.subplot(eeg_to_plot.shape[1], eeg_to_plot.shape[2], j * eeg_to_plot.shape[2] + i + 1)
+                    plt.plot(t, eeg_to_plot[:, j, i])
                     plt.xlim(0, eeg_to_plot.shape[0])
+                    plt.ylabel('trials')
+                    plt.xlabel('channels')
             plt.show()
         elif mode == 'psd':
             samples = eeg_to_plot.shape[0]
@@ -76,6 +79,10 @@ class Data:
                     plt.xlabel('frequency [Hz]')
                     plt.ylabel('PSD [V**2/Hz]')
                     plt.show()
+
+class TimeSeriesData(Data):
+    def compute_features(self):
+        self._features = self._eeg
 
 
 class CovData(Data):

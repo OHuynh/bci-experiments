@@ -71,7 +71,7 @@ def smica(data, freqs,  n_components=20, **kwargs):
     sources = smica.compute_sources().reshape(n_components, data._nb_trials, -1)
     return sources.transpose([2, 1, 0])
 
-def jisamm(data, n_sources_target=1, **kwargs):
+def jisamm(data, n_sources_target=10, **kwargs):
     """
     MM Algorithm joint independant subspace analysis [1]
 
@@ -84,7 +84,7 @@ def jisamm(data, n_sources_target=1, **kwargs):
     eeg = data.eeg
     framesize = 128
     hop = 32
-    algo = 'five'
+    algo = 'overiva-ip2'
     win_a = pra.hann(framesize)
     win_s = pra.transform.compute_synthesis_window(win_a, hop)
     trials = eeg.shape[1]

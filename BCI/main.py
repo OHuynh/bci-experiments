@@ -71,7 +71,8 @@ def main():
     #all_data_test = load_osf_mi_classification(CovData, 'Test Set')
 
 
-    all_data_train = load_eegbci_mi_classification(TimeFrequencyData)
+    all_data_train = load_eegbci_mi_classification(TimeFrequencyData,
+                                                   path='../data')
     all_data_train = all_data_train[:2]
     #all_data_test = all_data_test[:2]
 

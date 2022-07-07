@@ -57,7 +57,7 @@ def load_osf_mi_classification(type_data, load_train=True):
     return data
 
 
-def load_eegbci_mi_classification(type_data):
+def load_eegbci_mi_classification(type_data, path):
     """
     EEGBCI dataset [1]
     [1] Schalk, G., McFarland, D.J., Hinterberger, T., Birbaumer, N.,
@@ -73,7 +73,7 @@ def load_eegbci_mi_classification(type_data):
         runs = [4, 8, 12]   # Motor imagery: left vs right hand
 
         raw_files = [
-            read_raw_edf(f, preload=True) for f in eegbci.load_data(subject, runs, path='../data')
+            read_raw_edf(f, preload=True) for f in eegbci.load_data(subject, runs, path=path)
         ]
         raw = concatenate_raws(raw_files)
 
