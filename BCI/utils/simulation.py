@@ -33,6 +33,7 @@ def randperm(n=1):
 def generate_wavelet_sources(type_data,
                              start=1.0,
                              end=5.0,
+                             total_len=5.0,
                              pattern_len_max=2,
                              pattern_len_min=0.5,
                              freq=160,
@@ -44,6 +45,7 @@ def generate_wavelet_sources(type_data,
     :param type_data: class of BCI.core.data
     :param start: start of cue in sec
     :param end: end of cue in sec
+    :param total_len: len of the signal to generate in sec
     :param pattern_len_max: max length of activity inside the activity interval
     :param pattern_len_min: min length of activity inside the activity interval
     :param freq: sampling frequency
@@ -52,13 +54,13 @@ def generate_wavelet_sources(type_data,
     :param nb_subjects: number of subjects
     :return: array of 'type_data' with a length of 'nb_subjects'
     """
-
+    assert 0 <= start < end <= total_len, 'Invalid timelapse parameters given'
     # generate a noised wavelet signal
     all_data = []
     x_max_len = pattern_len_max * freq
     x_min_len = pattern_len_min * freq
     pattern_x = np.arange(x_max_len)
-    data = make_sources(n_s=2 * nb_electrodes, t_samp=pattern_len_max * freq, K=8, w=10)
+    data = make_sources(n_s=2 * nb_electrodes, t_samp=pattern_len_max * freq, k=8, w=10)
     data = np.reshape(data, [2, nb_electrodes, -1])
     #np.save(f'./results/source_patterns_{time_str}.npy', data)
     db = 60.0 # SNR in dB
@@ -73,7 +75,7 @@ def generate_wavelet_sources(type_data,
         #length = np.random.randint(x_min_len, x_max_len, (nb_trials,))
         #start_activity = np.random.randint([start * freq] * nb_trials, freq * end - length, (nb_trials,))
 
-        eeg = np.zeros((801, nb_trials, nb_electrodes))
+        eeg = np.zeros((int(total_len * freq), nb_trials, nb_electrodes))
 
         for j in range(nb_trials):
             for k in range(nb_electrodes):
@@ -85,11 +87,11 @@ def generate_wavelet_sources(type_data,
         eeg = eeg + sig_s * 10 ** (-db / 20) * np.random.randn(*eeg.shape)
 
         all_data.append(type_data(eeg=eeg,
-                                  nb_trials=45,
+                                  nb_trials=nb_trials,
                                   frequency=freq,
                                   y_dec=labels,
                                   one_hot=None,
                                   y_txt=None,
                                   map_label=None,
                                   chan=np.array([f'fake_{i}' for i in range(nb_electrodes)])))
-
+    return all_data
